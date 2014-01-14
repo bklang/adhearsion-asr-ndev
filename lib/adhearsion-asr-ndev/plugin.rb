@@ -16,7 +16,7 @@ module AdhearsionASR::Ndev
       end
 
       # FIXME
-      #ATTSpeech.supervise_as :att_speech, config[:api_key], config[:api_secret], 'SPEECH'
+      ::AdhearsionASR::Ndev::Client.supervise_as :ndev_speech, config[:app_id], config[:app_key]
 
     end
   end

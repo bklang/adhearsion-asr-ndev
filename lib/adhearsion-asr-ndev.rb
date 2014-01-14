@@ -7,4 +7,5 @@ end
 
 require "adhearsion-asr-ndev/version"
 require "adhearsion-asr-ndev/plugin"
+require "adhearsion-asr-ndev/client"
 require "adhearsion-asr-ndev/controller_methods"

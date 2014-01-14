@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_runtime_dependency %q<adhearsion-asr>, ["~> 1.1"]
-  s.add_runtime_dependency %q<att_speech>, ["~> 0.0.5"]
+  s.add_runtime_dependency %q<httpclient>, ["~> 2.3" ]
   s.add_runtime_dependency %q<adhearsion>, ["~> 2.4"]
   s.add_runtime_dependency %q<punchblock>, ["~> 2.0"]
   s.add_runtime_dependency %q<ruby_speech>, ["~> 2.1"]

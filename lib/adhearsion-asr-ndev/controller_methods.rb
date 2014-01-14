@@ -36,7 +36,8 @@ module AdhearsionASR::Ndev
 
       options[:timeout] || options[:limit] || options[:terminator] || raise(ArgumentError, "You must specify at least one of limit, terminator or timeout")
 
-      grammars = AdhearsionASR::AskGrammarBuilder.new(options).grammars
+      # FIXME: Ndev doesn't use grammars
+      #grammars = AdhearsionASR::AskGrammarBuilder.new(options).grammars
 
       output_document = prompts.empty? ? nil : output_formatter.ssml_for_collection(prompts)
 
@@ -44,7 +45,7 @@ module AdhearsionASR::Ndev
 
       recording = record(start_beep: false, initial_timeout: 4.seconds, final_timeout: 1.seconds, format: 'wav', direction: :send).complete_event.recording
       # TODO: Make this work when Adhearsion isn't running on the same server as the telephony engine
-      listener = Celluloid::Actor[:att_speech].future.speech_to_text File.read(recording.uri.sub('file://', ''))
+      listener = Celluloid::Actor[:ndev_speech].future.recognize recording.uri.sub('file://', '')
 
       # Allow masking sounds while ASR is processing
       yield if block_given?
@@ -53,9 +54,11 @@ module AdhearsionASR::Ndev
       begin
         interpretation = listener.value(options[:timeout])
         logger.trace "Result from Nuance Ndev: #{interpretation.inspect}"
-        if interpretation.recognition.status == 'OK' && interpretation.recognition.n_best.confidence >= options[:min_confidence]
-          interpretation.recognition.n_best.result_text
+        if interpretation.include?("<html>")
+          # TODO return a no-match response
+          return nil
         end
+        interpretation
       rescue Celluloid::TimeoutError
         # TODO return a no-match response
         return nil
