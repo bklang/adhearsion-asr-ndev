@@ -50,18 +50,15 @@ module AdhearsionASR::Ndev
       # Allow masking sounds while ASR is processing
       yield if block_given?
 
-      # TODO: Map this into a Response object
       begin
         interpretation = listener.value(options[:timeout])
         logger.trace "Result from Nuance Ndev: #{interpretation.inspect}"
         if interpretation.include?("<html>")
-          # TODO return a no-match response
-          return nil
+          return create_result nil, false
         end
-        interpretation
+        create_result interpretation, true
       rescue Celluloid::TimeoutError
-        # TODO return a no-match response
-        return nil
+        return create_result nil, false
       end
     end
 
@@ -72,6 +69,16 @@ module AdhearsionASR::Ndev
         min_confidence: Plugin.config.min_confidence,
         language: Plugin.config.input_language
       }
+    end
+
+    def create_result(text, success = true)
+      AdhearsionASR::Result.new.tap do |result|
+        result.status         = success ? :match : :nomatch
+        result.mode           = :voice
+        result.confidence     = success ? 100 : 0
+        result.utterance      = text
+        result.interpretation = text
+      end
     end
   end
 end

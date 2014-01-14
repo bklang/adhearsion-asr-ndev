@@ -27,7 +27,7 @@ class AdhearsionASR::Ndev::Client
     data = File.read(file)
 
     result = @client.post uri.to_s, data, headers
-    result.body.read
+    result.body.strip
   end
 
 private
@@ -52,6 +52,7 @@ private
       'X-Dictation-NBestListSize' => 1
     }
   end
+
 end
 
     
